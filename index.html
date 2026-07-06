@@ -345,6 +345,21 @@
   .bub-atts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
   .bub-img{max-width:200px;max-height:200px;border-radius:12px;display:block}
 
+  /* ---------- Orbe de comando (IA + voz) ---------- */
+  .tab-ai{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--accent);font-size:10px;font-weight:700;background:none;padding:0}
+  .tab-ai .orb{width:52px;height:52px;border-radius:50%;background:var(--grad);color:#0a1714;display:grid;place-items:center;font-size:25px;margin-top:-28px;box-shadow:0 8px 24px rgba(95,208,234,.5),0 0 0 5px var(--bg);animation:orbpulse 3s ease-in-out infinite}
+  .tab-ai:active .orb{transform:scale(.93)}
+  @keyframes orbpulse{0%,100%{box-shadow:0 8px 22px rgba(95,208,234,.4),0 0 0 5px var(--bg)}50%{box-shadow:0 12px 34px rgba(109,240,196,.85),0 0 0 5px var(--bg)}}
+  .side-cmd{margin:16px 4px 4px;padding:13px;border-radius:14px;background:var(--grad);color:#0a1714;font-weight:700;font-size:14.5px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 20px rgba(95,208,234,.4);animation:orbpulse 3s ease-in-out infinite}
+  .side-cmd:active{transform:scale(.98)}
+  .voice-overlay{position:fixed;inset:0;z-index:120;background:radial-gradient(620px 420px at 50% 38%, rgba(95,208,234,.14), rgba(0,0,0,.92));display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+  .voice-overlay.on{display:flex;animation:fade .25s ease}
+  .voice-orb{position:relative;width:128px;height:128px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:46px;box-shadow:0 0 70px rgba(95,208,234,.6)}
+  .voice-orb .vr{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(95,208,234,.5);animation:vr 1.9s ease-out infinite}
+  .voice-orb .vr.d2{animation-delay:.95s}
+  @keyframes vr{0%{transform:scale(1);opacity:.7}100%{transform:scale(2);opacity:0}}
+  .voice-text{margin-top:30px;font-size:19px;line-height:1.4;max-width:560px;min-height:28px;color:var(--text);font-weight:500}
+
   /* ---------- MITs ---------- */
   .mit-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--hairline)}
   .mit-row:last-child{border-bottom:none}
@@ -417,6 +432,7 @@
   <div class="side-brand"><span class="dot"></span> Foco</div>
   <div class="side-clock" id="sideClock">--:--</div>
   <div class="side-date" id="sideDate"></div>
+  <button class="side-cmd" id="aiOrbSide">✦ Central de comando · voz</button>
   <button class="side-add">＋ Capturar</button>
   <nav class="side-nav">
     <button data-tab="dia"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="11" rx="1.6"/><rect x="13" y="3" width="8" height="6" rx="1.6"/><rect x="13" y="12" width="8" height="9" rx="1.6"/><rect x="3" y="17" width="8" height="4" rx="1.6"/></svg>Painel</button>
@@ -448,6 +464,7 @@
 <nav class="tabbar" id="tabs">
   <button data-tab="dia" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="11" rx="1.6"/><rect x="13" y="3" width="8" height="6" rx="1.6"/><rect x="13" y="12" width="8" height="9" rx="1.6"/><rect x="3" y="17" width="8" height="4" rx="1.6"/></svg>Painel</button>
   <button data-tab="vida"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>Vida</button>
+  <button class="tab-ai" id="aiOrb" title="Central de comando · voz"><span class="orb">✦</span>Comando</button>
   <button data-tab="tarefas"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 5.6 5 6.6 6.8 4.8"/><path d="M4 11.6 5 12.6 6.8 10.8"/><path d="M4.2 18h.01"/></svg>Tarefas</button>
   <button data-tab="pomodoro"><svg viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9"/><path d="M9.5 2.5h5"/></svg>Foco</button>
 </nav>
@@ -530,6 +547,15 @@
       <div class="ios-row"><span class="ios-row-label">Categoria</span><select id="tCategory" class="ios-select"><option>Foco</option><option>Design</option><option>Estudo</option><option>Escrita</option><option>Pesquisa</option><option>Pessoal</option><option>Reunião</option></select></div>
     </div>
     <button class="btn" id="tDelete" style="width:100%;color:var(--q-do);display:none">Apagar sessão</button>
+  </div>
+</div>
+
+<div class="voice-overlay" id="voiceOverlay">
+  <div class="voice-orb"><span class="vr"></span><span class="vr d2"></span>🎙️</div>
+  <div class="voice-text" id="voiceText">Ouvindo…</div>
+  <div style="display:flex;gap:12px;margin-top:28px">
+    <button class="btn primary" onclick="stopVoice()">Enviar</button>
+    <button class="btn ghost" onclick="cancelVoice()">Cancelar</button>
   </div>
 </div>
 
@@ -736,6 +762,8 @@ $('#navAdd').addEventListener('click',()=>openCapture());
 $('#trackerPill').addEventListener('click',e=>{if(e.target.closest('.tstop'))return;if(!trackerRunning())goTab('dia');});
 document.querySelector('.side-nav').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)goTab(b.dataset.tab);});
 document.querySelector('.side-add').addEventListener('click',()=>openCapture());
+$('#aiOrb').addEventListener('click',startVoice);
+$('#aiOrbSide').addEventListener('click',startVoice);
 function goTab(tab){currentTab=tab;render();}
 function setDashView(v){dashView=v;render();}
 function shiftCursor(dir){const d=new Date(dashCursor);if(dashView==='day')d.setDate(d.getDate()+dir);else if(dashView==='week')d.setDate(d.getDate()+7*dir);else if(dashView==='month')d.setMonth(d.getMonth()+dir);else d.setFullYear(d.getFullYear()+dir);dashCursor=d.getTime();render();}
@@ -1161,19 +1189,54 @@ async function chatLoop(){
 function chatChip(text){chatSend(text);}
 function chatInputSend(){const el=$('#chatInput');if(!el)return;const t=el.value;el.value='';chatSend(t);}
 function chatClear(){state.chat.msgs=[];state.chat.log=[];save();renderChat();}
+
+/* ===================== COMANDO DE VOZ ===================== */
+let voiceActive=false,voiceText='',webRec=null;
+function speechNative(){return (window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SpeechRecognition)||null;}
+function voiceSupported(){return !!speechNative()||('webkitSpeechRecognition' in window)||('SpeechRecognition' in window);}
+function showVoiceOverlay(){const o=$('#voiceOverlay');if(o){$('#voiceText').textContent='Ouvindo…';o.classList.add('on');}}
+function updateVoiceOverlay(t){const el=$('#voiceText');if(el)el.textContent=t||'Ouvindo…';}
+function hideVoiceOverlay(){const o=$('#voiceOverlay');if(o)o.classList.remove('on');}
+async function startVoice(){
+  if(voiceActive)return;
+  goTab('ia');
+  if(!state.settings.apiKey){toast('Configure a chave da IA em Ajustes');return;}
+  if(!voiceSupported()){toast('Voz não disponível aqui — digite pro assistente');return;}
+  voiceText='';showVoiceOverlay();
+  const SR=speechNative();
+  if(SR){
+    try{
+      await SR.requestPermissions();
+      try{await SR.removeAllListeners();}catch(_){}
+      await SR.addListener('partialResults',d=>{const t=(d&&d.matches&&d.matches[0])||'';if(t){voiceText=t;updateVoiceOverlay(t);}});
+      await SR.start({language:'pt-BR',partialResults:true,popup:false});
+      voiceActive=true;
+    }catch(e){hideVoiceOverlay();voiceActive=false;toast('Voz: '+(e.message||'erro'));}
+  } else {
+    const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
+    webRec=new Rec();webRec.lang='pt-BR';webRec.interimResults=true;webRec.continuous=false;
+    webRec.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;voiceText=t;updateVoiceOverlay(t);};
+    webRec.onerror=()=>{};
+    webRec.onend=()=>{finishVoice();};
+    try{webRec.start();voiceActive=true;}catch(e){hideVoiceOverlay();voiceActive=false;}
+  }
+}
+async function stopVoice(){const SR=speechNative();if(SR){try{await SR.stop();}catch(e){}finishVoice();}else if(webRec){try{webRec.stop();}catch(e){}}}
+function cancelVoice(){voiceText='';const SR=speechNative();if(SR){try{SR.stop();}catch(e){}}if(webRec){try{webRec.onend=null;webRec.stop();}catch(e){}}voiceActive=false;hideVoiceOverlay();}
+function finishVoice(){voiceActive=false;hideVoiceOverlay();const t=(voiceText||'').trim();voiceText='';if(t)chatSend(t);}
 function aiSteps(id){const t=state.tasks.find(x=>x.id===id);if(!t)return;if(!state.settings.apiKey){toast('Configure a chave da IA em Ajustes');return;}goTab('ia');setTimeout(()=>chatSend('Quebre em passos práticos e adicione como subtarefas a tarefa: "'+t.title+'". Estime tempo e impacto se fizer sentido.'),80);}
 function renderChat(){if(currentTab==='ia')render();}
 function renderAssistant(v){
   const s=state.settings;
   if(!s.apiKey){v.innerHTML=`<div class="card" style="padding:16px 18px;margin-top:6px"><div style="font-size:13.5px;color:var(--muted)">⚠ Configure sua chave da API em <b style="color:var(--text)">Ajustes</b> para conversar com o assistente.</div><button class="btn sm" style="margin-top:11px" onclick="goTab('config')">Ir para Ajustes</button></div>`;return;}
   let html='<div class="chat-msgs" id="state.chat.msgs">';
-  if(!state.chat.log.length) html+=`<div class="bubble ai">Oi! Sou seu assistente. Te ajudo a definir prioridades, dar clareza às tarefas e marcar o que já foi feito — direto ao ponto. Por onde começamos?</div>`;
+  if(!state.chat.log.length) html+=`<div class="bubble ai">Sou sua <b>central de comando</b>. Fale ou escreva — eu organizo, priorizo e executo por você. Toque no 🎙️ e diga algo como <i>"crie uma tarefa de academia na área Saúde para amanhã"</i>.</div>`;
   state.chat.log.forEach(m=>{const cls=m.who==='user'?'user':m.who==='ai'?'ai':m.who==='act'?'act':'err';const pre=m.who==='act'?'✓ ':'';let atts='';if(m.atts&&m.atts.length)atts=`<div class="bub-atts">${m.atts.map(a=>a.kind==='image'?`<img src="${a.dataUrl}" class="bub-img">`:`<span class="att-chip">📄 ${esc(a.name)}</span>`).join('')}</div>`;const txt=(pre+(m.text||'')).trim();html+=`<div class="bubble ${cls}">${txt?esc(txt):''}${atts}</div>`;});
   if(chatBusy) html+=`<div class="typing"><span></span><span></span><span></span></div>`;
   html+='</div>';
   if(!state.chat.log.length) html+=`<div class="chips"><button class="chip" onclick="chatChip('Me ajude a planejar meu dia — faça as perguntas necessárias.')">Planejar meu dia</button><button class="chip" onclick="chatChip('O que eu deveria fazer agora?')">O que faço agora?</button><button class="chip" onclick="chatChip('Vamos revisar minhas pendências e priorizar.')">Revisar pendências</button><button class="chip" onclick="chatChip('Quero definir a prioridade do dia.')">Definir prioridade</button><button class="chip" onclick="chatChip('Faça minha revisão semanal: aponte áreas negligenciadas e o que priorizar.')">Revisão semanal</button></div>`;
   if(pendingAtts.length)html+=`<div class="att-chips">${pendingAtts.map((a,i)=>`<span class="att-chip">${a.kind==='image'?'🖼️':'📄'} ${esc(a.name)}<button onclick="rmAtt(${i})">✕</button></span>`).join('')}</div>`;
-  html+=`<div class="chat-input"><label class="chat-attach" title="Anexar imagem ou arquivo">📎<input type="file" multiple accept="image/*,.txt,.md,.csv,.json,.js,.ts,.py,.html,.css,.xml,.yml,.yaml,.sql,.sh" style="display:none" onchange="onAttach(this)"></label><input id="chatInput" placeholder="Escreva para o assistente…" autocomplete="off" onkeydown="if(event.key==='Enter')chatInputSend()" ${chatBusy?'disabled':''}>${state.chat.log.length?`<button class="chat-clear" onclick="chatClear()" title="Limpar">↺</button>`:''}<button class="chat-send" onclick="chatInputSend()">➤</button></div>`;
+  html+=`<div class="chat-input"><button class="chat-attach" onclick="startVoice()" title="Falar (comando de voz)" style="color:var(--accent)">🎙️</button><label class="chat-attach" title="Anexar imagem ou arquivo">📎<input type="file" multiple accept="image/*,.txt,.md,.csv,.json,.js,.ts,.py,.html,.css,.xml,.yml,.yaml,.sql,.sh" style="display:none" onchange="onAttach(this)"></label><input id="chatInput" placeholder="Escreva para o assistente…" autocomplete="off" onkeydown="if(event.key==='Enter')chatInputSend()" ${chatBusy?'disabled':''}>${state.chat.log.length?`<button class="chat-clear" onclick="chatClear()" title="Limpar">↺</button>`:''}<button class="chat-send" onclick="chatInputSend()">➤</button></div>`;
   v.innerHTML=html;
   setTimeout(()=>{window.scrollTo(0,document.body.scrollHeight);const ci=$('#chatInput');if(ci&&!chatBusy)ci.focus();},0);
 }

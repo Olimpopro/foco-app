@@ -345,6 +345,53 @@
   .bub-atts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
   .bub-img{max-width:200px;max-height:200px;border-radius:12px;display:block}
 
+  /* ---------- Onboarding ---------- */
+  .ob{position:fixed;inset:0;z-index:150;background:radial-gradient(700px 500px at 50% 20%,#182029,#000 75%);display:none;align-items:center;justify-content:center;padding:24px}
+  .ob.on{display:flex;animation:fade .3s ease}
+  .ob-card{width:100%;max-width:460px;text-align:center}
+  .ob-slide{display:none;flex-direction:column;align-items:center}
+  .ob-slide.on{display:flex;animation:fade .35s ease}
+  .ob-ico{width:110px;height:110px;border-radius:30px;background:var(--grad);display:grid;place-items:center;font-size:52px;box-shadow:0 20px 60px -10px rgba(95,208,234,.6);margin-bottom:28px}
+  .ob-h{font-size:27px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px}
+  .ob-p{color:var(--muted);font-size:15.5px;line-height:1.55;max-width:360px}
+  .ob-dots{display:flex;gap:8px;justify-content:center;margin:30px 0 22px}
+  .ob-dots i{width:8px;height:8px;border-radius:50%;background:var(--surface-2);transition:.2s}
+  .ob-dots i.on{background:var(--accent);width:22px;border-radius:5px}
+  .ob-next{width:100%;padding:15px;font-size:16px}
+  .ob-skip{margin-top:14px;color:var(--faint);font-size:14px;background:none;width:100%}
+
+  /* ---------- Paywall ---------- */
+  .paywall{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+  .paywall.on{display:flex;animation:fade .25s ease}
+  .pw-card{width:100%;max-width:460px;background:linear-gradient(180deg,#1c2530,var(--bg-elev));border-radius:24px 24px 0 0;padding:30px 22px calc(env(safe-area-inset-bottom) + 24px);text-align:center;position:relative;box-shadow:var(--shadow);animation:sheetUp .32s cubic-bezier(.2,.85,.25,1)}
+  .pw-close{position:absolute;top:16px;right:18px;color:var(--faint);font-size:18px;width:32px;height:32px}
+  .pw-crown{width:64px;height:64px;border-radius:20px;background:var(--grad);display:grid;place-items:center;font-size:30px;margin:0 auto 14px;box-shadow:0 14px 40px -8px rgba(95,208,234,.7)}
+  .pw-title{font-size:24px;font-weight:800;letter-spacing:-.4px}
+  .pw-sub{color:var(--muted);font-size:14px;margin-top:4px;margin-bottom:20px}
+  .pw-benes{text-align:left;display:flex;flex-direction:column;gap:12px;background:var(--surface);border-radius:16px;padding:18px;margin-bottom:20px}
+  .pw-benes div{font-size:14.5px;font-weight:500}
+  .pw-price{margin-bottom:18px}
+  .pw-price b{font-size:32px;font-weight:800;letter-spacing:-1px}
+  .pw-price span{color:var(--muted);font-size:16px}
+  .pw-price small{display:block;color:var(--faint);font-size:12.5px;margin-top:3px}
+  .pw-buy{width:100%;padding:16px;font-size:16.5px}
+  .pw-alt{display:block;width:100%;color:var(--muted);font-size:14px;margin-top:12px;background:none}
+
+  /* ---------- Perfil / conta ---------- */
+  .acct-card{background:linear-gradient(150deg,#1f2a35,var(--surface));border-radius:20px;padding:20px;margin-top:4px}
+  .acct-top{display:flex;align-items:center;gap:14px}
+  .acct-av{width:52px;height:52px;border-radius:50%;background:var(--grad);color:#0a1714;display:grid;place-items:center;font-size:22px;font-weight:800;flex-shrink:0}
+  .acct-name{font-size:17px;font-weight:700}
+  .plan-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(109,240,196,.16);color:var(--ok);font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:3px}
+  .credit-meter{margin-top:16px}
+  .credit-bar{height:8px;background:var(--surface-2);border-radius:5px;overflow:hidden;margin-top:7px}
+  .credit-bar i{display:block;height:100%;background:var(--grad);border-radius:5px;transition:.4s}
+  details.adv{margin-top:14px;background:var(--surface);border-radius:16px;overflow:hidden}
+  details.adv>summary{padding:16px 18px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  details.adv>summary::-webkit-details-marker{display:none}
+  details.adv[open]>summary{color:var(--text)}
+  details.adv .adv-body{padding:0 4px 6px}
+
   /* ---------- Orbe de comando (IA + voz) ---------- */
   .tab-ai{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--accent);font-size:10px;font-weight:700;background:none;padding:0}
   .tab-ai .orb{width:52px;height:52px;border-radius:50%;background:var(--grad);color:#0a1714;display:grid;place-items:center;font-size:25px;margin-top:-28px;box-shadow:0 8px 24px rgba(95,208,234,.5),0 0 0 5px var(--bg);animation:orbpulse 3s ease-in-out infinite}
@@ -441,7 +488,7 @@
     <button data-tab="pomodoro"><svg viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9"/><path d="M9.5 2.5h5"/></svg>Foco</button>
     <div class="side-sep"></div>
     <button data-tab="ia"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18"/></svg>Assistente IA</button>
-    <button data-tab="config"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l1.6-1.2-1.6-2.8-1.9.7a7.6 7.6 0 0 0-1.7-1l-.3-2H10l-.3 2a7.6 7.6 0 0 0-1.7 1l-1.9-.7L4.5 7.8 6.1 9a7.6 7.6 0 0 0 0 2L4.5 12.2l1.6 2.8 1.9-.7a7.6 7.6 0 0 0 1.7 1l.3 2h3.2l.3-2a7.6 7.6 0 0 0 1.7-1l1.9.7 1.6-2.8z"/></svg>Ajustes</button>
+    <button data-tab="config"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l1.6-1.2-1.6-2.8-1.9.7a7.6 7.6 0 0 0-1.7-1l-.3-2H10l-.3 2a7.6 7.6 0 0 0-1.7 1l-1.9-.7L4.5 7.8 6.1 9a7.6 7.6 0 0 0 0 2L4.5 12.2l1.6 2.8 1.9-.7a7.6 7.6 0 0 0 1.7 1l.3 2h3.2l.3-2a7.6 7.6 0 0 0 1.7-1l1.9.7 1.6-2.8z"/></svg>Perfil</button>
   </nav>
 </aside>
 
@@ -550,6 +597,31 @@
   </div>
 </div>
 
+<div class="ob" id="onboard"><div class="ob-card">
+  <div class="ob-slides" id="obSlides"></div>
+  <div class="ob-dots" id="obDots"></div>
+  <button class="btn primary ob-next" id="obNext" onclick="obAdvance()">Próximo</button>
+  <button class="ob-skip" onclick="finishOnboard()">Pular</button>
+</div></div>
+
+<div class="paywall" id="paywall"><div class="pw-card">
+  <button class="pw-close" onclick="closePaywall()">✕</button>
+  <div class="pw-crown">✦</div>
+  <div class="pw-title">Foco Premium</div>
+  <div class="pw-sub">Sua central de produtividade, sem limites.</div>
+  <div class="pw-benes">
+    <div>🎙️ Assistente por voz ilimitado</div>
+    <div>☁️ Sincronização entre todos os aparelhos</div>
+    <div>📅 Integração com sua Agenda</div>
+    <div>📊 Relatórios e insights avançados</div>
+    <div>🚫 Sem anúncios · suporte prioritário</div>
+  </div>
+  <div class="pw-price"><b>R$ 149,90</b><span>/ano</span><small>equivale a R$ 12,49/mês</small></div>
+  <button class="btn primary pw-buy" onclick="subscribe('annual')">Assinar Premium — Anual</button>
+  <button class="pw-alt" onclick="restorePurchase()">Restaurar compra</button>
+  <button class="pw-alt" onclick="closePaywall()">Agora não</button>
+</div></div>
+
 <div class="voice-overlay" id="voiceOverlay">
   <div class="voice-orb"><span class="vr"></span><span class="vr d2"></span>🎙️</div>
   <div class="voice-text" id="voiceText">Ouvindo…</div>
@@ -586,14 +658,17 @@ function defaultState(){
   return {areas,
     projects:[{id:uid(),name:'Trabalho',areaId:areas[1].id,focus:true},{id:uid(),name:'Pessoal',areaId:areas[7].id,focus:true}],
     tasks:[], entries:[], pomodorosByDay:{}, priorityTaskId:null, chat:{msgs:[],log:[]},
+    account:{plan:'premium',credits:1000,onboarded:false,name:''},
     settings:{...SETTINGS_DEFAULTS}};
 }
+function defaultAccount(){return {plan:'premium',credits:1000,onboarded:false,name:''};}
 function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));if(!s||!s.tasks)return defaultState();
   s.settings=Object.assign({...SETTINGS_DEFAULTS},s.settings||{});
   s.settings.sync=Object.assign({url:'',key:'',id:'',pass:'',enabled:false},s.settings.sync||{});
   if(!s.settings.model||!s.settings.model.includes('/'))s.settings.model=DEFAULT_MODEL;
   if(!Array.isArray(s.entries))s.entries=[];
   if(!s.chat||!Array.isArray(s.chat.msgs))s.chat={msgs:[],log:[]};
+  if(!s.account)s.account=defaultAccount();
   if(!Array.isArray(s.areas)||!s.areas.length)s.areas=makeAreas();
   const fb=s.areas[0].id;
   s.projects.forEach(p=>{if(!p.areaId||!s.areas.some(a=>a.id===p.areaId))p.areaId=(/(trabalho|carreira)/i.test(p.name)?(s.areas[1]||s.areas[0]).id:fb);});
@@ -617,7 +692,7 @@ async function syncMemory(force){if(!memHandle)return;try{let p=await memHandle.
 function scheduleSync(){if(!memHandle)return;clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncMemory(false),900);}
 async function restoreMemHandle(){memHandle=await idbGet('memHandle');if(memHandle){memStatus='conectado';if(currentTab==='config')render();}}
 async function loadFromMemoryFile(){if(!memHandle){connectMemoryFile();return;}try{if((await memHandle.queryPermission({mode:'read'}))!=='granted'){if((await memHandle.requestPermission({mode:'read'}))!=='granted')return;}const f=await memHandle.getFile();let txt=await f.text();let d=JSON.parse(txt);if(d&&d.__enc==='foco1'){const pass=prompt('Senha do arquivo:');if(!pass)return;d=await decryptJSON(txt,pass);}if(d&&d.tasks){state=d;ensureState();save();render();toast('Memória carregada do arquivo');}else toast('Arquivo inválido');}catch(e){toast('Não consegui ler o arquivo');}}
-function ensureState(){if(!Array.isArray(state.entries))state.entries=[];if(!state.chat||!Array.isArray(state.chat.msgs))state.chat={msgs:[],log:[]};if(!Array.isArray(state.areas)||!state.areas.length)state.areas=makeAreas();const fb=state.areas[0].id;state.projects.forEach(p=>{if(!p.areaId||!state.areas.some(a=>a.id===p.areaId))p.areaId=fb;});state.settings=Object.assign({...SETTINGS_DEFAULTS},state.settings||{});state.settings.sync=Object.assign({url:'',key:'',id:'',pass:'',enabled:false},state.settings.sync||{});if(!state.settings.model||!state.settings.model.includes('/'))state.settings.model=DEFAULT_MODEL;}
+function ensureState(){if(!Array.isArray(state.entries))state.entries=[];if(!state.chat||!Array.isArray(state.chat.msgs))state.chat={msgs:[],log:[]};if(!state.account)state.account=defaultAccount();if(!Array.isArray(state.areas)||!state.areas.length)state.areas=makeAreas();const fb=state.areas[0].id;state.projects.forEach(p=>{if(!p.areaId||!state.areas.some(a=>a.id===p.areaId))p.areaId=fb;});state.settings=Object.assign({...SETTINGS_DEFAULTS},state.settings||{});state.settings.sync=Object.assign({url:'',key:'',id:'',pass:'',enabled:false},state.settings.sync||{});if(!state.settings.model||!state.settings.model.includes('/'))state.settings.model=DEFAULT_MODEL;}
 async function exportEncrypted(){const pass=prompt('Crie uma senha para criptografar o backup:');if(!pass)return;const str=await encryptJSON(state,pass);const blob=new Blob([str],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='foco-backup-cripto.json';a.click();URL.revokeObjectURL(a.href);toast('Backup criptografado exportado 🔒');}
 
 /* ===================== SINCRONIZAÇÃO (E2E, Supabase) ===================== */
@@ -754,7 +829,7 @@ function rangeFor(view,cursor){
 
 /* ===================== ROUTING ===================== */
 let currentTab='dia',aiDraft='',aiProposals=null,tarefasSeg='ativas',dashView='day',dashCursor=Date.now();
-const TITLES={dia:'',vida:'Vida',tarefas:'Tarefas',matriz:'Vida',projetos:'Vida',pomodoro:'Foco',ia:'Assistente',config:'Ajustes'};
+const TITLES={dia:'',vida:'Vida',tarefas:'Tarefas',matriz:'Vida',projetos:'Vida',pomodoro:'Foco',ia:'Assistente',config:'Perfil'};
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)goTab(b.dataset.tab);});
 $('#navIA').addEventListener('click',()=>goTab('ia'));
 $('#navCfg').addEventListener('click',()=>goTab('config'));
@@ -1048,40 +1123,42 @@ function renderPomodoro(v){
 
 /* ===================== CONFIG ===================== */
 function renderConfig(v){
-  const s=state.settings;
-  const tgt=document.createElement('div');tgt.className='card';tgt.style.cssText='padding:20px;margin-top:4px';
-  tgt.innerHTML=`<div class="field-label" style="margin-top:0">Meta diária</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Quantas horas de trabalho você quer registrar por dia.</p><div class="field"><label>Meta de trabalho (minutos/dia)</label><input type="number" min="30" max="960" step="30" value="${s.dailyTargetMin}" onchange="state.settings.dailyTargetMin=Math.max(30,parseInt(this.value)||450);save();toast('Meta atualizada')"></div>`;
-  v.appendChild(tgt);
-  const nt=document.createElement('div');nt.className='card';nt.style.cssText='padding:20px;margin-top:14px';
-  const ntOn=('Notification' in window)&&Notification.permission==='granted';
-  nt.innerHTML=`<div class="field-label" style="margin-top:0">Lembretes</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Avisos de prazo das tarefas e fim de Pomodoro pelo navegador.</p>${ntOn?'<div style="color:var(--ok);font-size:14px;font-weight:600">✓ Notificações ativadas</div>':`<button class="btn primary" onclick="askNotify()">Ativar notificações</button>`}`;
-  v.appendChild(nt);
-  const ai=document.createElement('div');ai.className='card';ai.style.cssText='padding:20px;margin-top:14px';
-  ai.innerHTML=`<div class="field-label" style="margin-top:0">Inteligência (IA)</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">Usa o <b style="color:var(--text)">OpenRouter</b> (acesso a vários modelos com uma chave só). Sua chave fica só neste navegador. <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">Obter chave →</a></p><div class="field" style="margin-bottom:16px"><label>Chave da API (sk-or-…)</label><input type="password" placeholder="sk-or-v1-..." value="${esc(s.apiKey||'')}" onchange="state.settings.apiKey=this.value.trim();save();toast(this.value.trim()?'Chave salva':'Chave removida')"></div><div class="field"><label>Modelo</label><input list="orModels" value="${esc(s.model)}" placeholder="anthropic/claude-3.5-sonnet" onchange="state.settings.model=this.value.trim()||'${DEFAULT_MODEL}';save();toast('Modelo: '+state.settings.model)"><datalist id="orModels"><option value="anthropic/claude-3.5-sonnet"></option><option value="anthropic/claude-3.7-sonnet"></option><option value="openai/gpt-4o"></option><option value="openai/gpt-4o-mini"></option><option value="google/gemini-2.0-flash-001"></option><option value="google/gemini-flash-1.5"></option><option value="meta-llama/llama-3.3-70b-instruct"></option></datalist></div><div style="font-size:12px;color:var(--faint);margin-top:8px">Use um modelo com suporte a ferramentas (tool use). Catálogo completo em <a href="https://openrouter.ai/models" target="_blank" rel="noopener">openrouter.ai/models</a>.</div>`;
-  v.appendChild(ai);
-  const ics=document.createElement('div');ics.className='card';ics.style.cssText='padding:20px;margin-top:14px';
-  ics.innerHTML=`<div class="field-label" style="margin-top:0">Calendário</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Exporte um .ics com os blocos agendados.</p><button class="btn primary" onclick="exportDayICS()">📅 Agenda do dia</button><button class="btn" onclick="exportAllAgenda()" style="margin-left:8px">Todas</button>`;
-  v.appendChild(ics);
-  const mem=document.createElement('div');mem.className='card';mem.style.cssText='padding:20px;margin-top:14px';
-  mem.innerHTML=`<div class="field-label" style="margin-top:0">Memória constante</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Tudo (tarefas, tempo e conversas do assistente) fica salvo neste navegador. Conecte um <b style="color:var(--text)">arquivo de memória</b> no seu computador para o app salvar tudo automaticamente nele — sobrevive a limpezas do navegador e você pode levar para outro lugar.</p>
-    ${memSupported()?`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn primary" onclick="connectMemoryFile()">${memHandle?'Trocar arquivo':'🔗 Conectar arquivo'}</button>${memHandle?`<button class="btn" onclick="loadFromMemoryFile()">Carregar do arquivo</button><span style="font-size:12.5px;color:var(--ok)">${esc(memStatus||'conectado')}</span>`:''}</div>`:`<div style="font-size:12.5px;color:var(--faint)">Seu navegador não suporta auto-salvar em arquivo (use Safari? tente Chrome no Mac). Use o Backup abaixo.</div>`}`;
-  v.appendChild(mem);
+  const s=state.settings, a=state.account, sc=state.settings.sync;
+  const initial=((a.name||'F').trim().charAt(0)||'F').toUpperCase();
+  const creditPct=Math.min(100,((a.credits||0)/1000)*100);
+  const acct=document.createElement('div');acct.className='acct-card';
+  acct.innerHTML=`<div class="acct-top"><div class="acct-av">${esc(initial)}</div><div style="flex:1"><div class="acct-name">${esc(a.name||'Você')}</div><div class="plan-badge">${a.plan==='premium'?'👑 Premium':'Plano grátis'}</div></div></div>
+    <div class="credit-meter"><div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)"><span>Créditos de IA</span><span><b id="creditNum" style="color:var(--text)">${a.credits||0}</b> / 1000</span></div><div class="credit-bar"><i id="creditFill" style="width:${creditPct}%"></i></div></div>
+    <div style="display:flex;gap:8px;margin-top:16px">${a.plan==='premium'?`<button class="btn" style="flex:1" onclick="openPaywall()">Gerenciar assinatura</button>`:`<button class="btn primary" style="flex:1" onclick="openPaywall()">✦ Assinar Premium</button>`}</div>
+    ${a.renews?`<div style="font-size:12px;color:var(--faint);margin-top:10px">Renova em ${esc(a.renews)}</div>`:''}`;
+  v.appendChild(acct);
 
-  const sc=state.settings.sync;
-  const sy=document.createElement('div');sy.className='card';sy.style.cssText='padding:20px;margin-top:14px';
-  sy.innerHTML=`<div class="field-label" style="margin-top:0">Sincronização entre dispositivos</div>
-    <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Mac ↔ iPhone com <b style="color:var(--text)">criptografia ponta a ponta</b> — o servidor só guarda dados cifrados. Precisa de um projeto grátis no Supabase (config única). <a href="#" onclick="showSyncHelp();return false">Ver passo a passo</a></p>
-    <div class="field" style="margin-bottom:12px"><label>Project URL (Supabase)</label><input placeholder="https://xxxx.supabase.co" value="${esc(sc.url||'')}" onchange="state.settings.sync.url=this.value.trim();save()"></div>
-    <div class="field" style="margin-bottom:12px"><label>anon key</label><input type="password" placeholder="eyJhbGciOi..." value="${esc(sc.key||'')}" onchange="state.settings.sync.key=this.value.trim();save()"></div>
-    <div class="field" style="margin-bottom:12px"><label>Código de sincronização (igual em todos os aparelhos)</label><div style="display:flex;gap:8px"><input placeholder="gere ou cole" value="${esc(sc.id||'')}" onchange="state.settings.sync.id=this.value.trim();save()" style="flex:1"><button class="btn sm" onclick="genSyncId()">Gerar</button></div></div>
-    <div class="field" style="margin-bottom:16px"><label>Senha de criptografia (igual em todos; nunca sai do aparelho)</label><input type="password" placeholder="crie uma senha forte" value="${esc(sc.pass||'')}" onchange="state.settings.sync.pass=this.value;save()"></div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label class="switch"><input type="checkbox" ${sc.enabled?'checked':''} onchange="toggleSync(this.checked)"><i></i></label><span style="font-size:15px">Ativar sincronização</span><button class="btn sm" onclick="syncNow()" style="margin-left:auto">Sincronizar agora</button></div>
-    <div id="syncStatus" style="font-size:12.5px;color:var(--muted);margin-top:12px">${esc(state.__syncStatus||'')}</div>`;
-  v.appendChild(sy);
+  const pref=document.createElement('div');pref.className='card';pref.style.cssText='padding:20px;margin-top:14px';
+  const ntOn=!!nativeLN()||(('Notification' in window)&&Notification.permission==='granted');
+  pref.innerHTML=`<div class="field-label" style="margin-top:0">Preferências</div>
+    <div class="field" style="margin-bottom:16px"><label>Seu nome</label><input value="${esc(a.name||'')}" placeholder="Como te chamar" onchange="state.account.name=this.value.trim();save();render()"></div>
+    <div class="field" style="margin-bottom:16px"><label>Meta de trabalho (min/dia)</label><input type="number" min="30" max="960" step="30" value="${s.dailyTargetMin}" onchange="state.settings.dailyTargetMin=Math.max(30,parseInt(this.value)||450);save();toast('Meta atualizada')"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px">Lembretes e notificações</span>${ntOn?'<span style="color:var(--ok);font-size:13.5px;font-weight:600">✓ Ativas</span>':`<button class="btn sm" onclick="askNotify()">Ativar</button>`}</div>`;
+  v.appendChild(pref);
 
-  const data=document.createElement('div');data.className='card';data.style.cssText='padding:20px;margin-top:14px';
-  data.innerHTML=`<div class="field-label" style="margin-top:0">Backup & segurança</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Seus dados nunca saem do seu dispositivo (só as mensagens que você envia ao assistente vão para o provedor de IA). Backup criptografado pede uma senha que <b style="color:var(--text)">não fica salva</b>.</p><button class="btn" onclick="exportData()">⬇ Backup</button><button class="btn" onclick="exportEncrypted()" style="margin-left:8px">🔒 Backup criptografado</button><button class="btn" onclick="importData()" style="margin-left:8px">⬆ Restaurar</button><button class="btn" onclick="wipeData()" style="margin-left:8px;color:var(--q-do)">Apagar tudo</button>`;
-  v.appendChild(data);
+  const tut=document.createElement('div');tut.className='card';tut.style.cssText='padding:16px 20px;margin-top:14px;display:flex;justify-content:space-between;align-items:center';
+  tut.innerHTML=`<span style="font-size:15px">Rever introdução</span><button class="btn sm" onclick="startOnboard()">Ver</button>`;
+  v.appendChild(tut);
+
+  const adv=document.createElement('details');adv.className='adv';
+  adv.innerHTML=`<summary>Avançado — IA, sincronização e dados<span style="color:var(--faint)">▾</span></summary><div class="adv-body">
+    <div class="card" style="padding:20px;margin-top:8px"><div class="field-label" style="margin-top:0">Inteligência (IA)</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">Enquanto sua conta é de teste, o app usa o <b style="color:var(--text)">OpenRouter</b> com sua chave. <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">Obter chave →</a></p><div class="field" style="margin-bottom:16px"><label>Chave da API (sk-or-…)</label><input type="password" placeholder="sk-or-v1-..." value="${esc(s.apiKey||'')}" onchange="state.settings.apiKey=this.value.trim();save();toast(this.value.trim()?'Chave salva':'Chave removida')"></div><div class="field"><label>Modelo</label><input list="orModels" value="${esc(s.model)}" placeholder="anthropic/claude-3.5-sonnet" onchange="state.settings.model=this.value.trim()||'${DEFAULT_MODEL}';save();toast('Modelo: '+state.settings.model)"><datalist id="orModels"><option value="anthropic/claude-3.5-sonnet"></option><option value="anthropic/claude-3.7-sonnet"></option><option value="openai/gpt-4o"></option><option value="openai/gpt-4o-mini"></option><option value="google/gemini-2.0-flash-001"></option><option value="meta-llama/llama-3.3-70b-instruct"></option></datalist></div></div>
+    <div class="card" style="padding:20px;margin-top:12px"><div class="field-label" style="margin-top:0">Sincronização (E2E)</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Criptografia ponta a ponta via Supabase. <a href="#" onclick="showSyncHelp();return false">Passo a passo</a></p>
+      <div class="field" style="margin-bottom:12px"><label>Project URL</label><input placeholder="https://xxxx.supabase.co" value="${esc(sc.url||'')}" onchange="state.settings.sync.url=this.value.trim();save()"></div>
+      <div class="field" style="margin-bottom:12px"><label>anon key</label><input type="password" placeholder="eyJhbGciOi..." value="${esc(sc.key||'')}" onchange="state.settings.sync.key=this.value.trim();save()"></div>
+      <div class="field" style="margin-bottom:12px"><label>Código de sincronização</label><div style="display:flex;gap:8px"><input placeholder="gere ou cole" value="${esc(sc.id||'')}" onchange="state.settings.sync.id=this.value.trim();save()" style="flex:1"><button class="btn sm" onclick="genSyncId()">Gerar</button></div></div>
+      <div class="field" style="margin-bottom:16px"><label>Senha de criptografia</label><input type="password" placeholder="senha forte" value="${esc(sc.pass||'')}" onchange="state.settings.sync.pass=this.value;save()"></div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label class="switch"><input type="checkbox" ${sc.enabled?'checked':''} onchange="toggleSync(this.checked)"><i></i></label><span style="font-size:15px">Ativar</span><button class="btn sm" onclick="syncNow()" style="margin-left:auto">Sincronizar</button></div>
+      <div id="syncStatus" style="font-size:12.5px;color:var(--muted);margin-top:12px">${esc(state.__syncStatus||'')}</div></div>
+    <div class="card" style="padding:20px;margin-top:12px"><div class="field-label" style="margin-top:0">Arquivo de memória</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Auto-salvar tudo num arquivo local (Chrome/Edge no desktop).</p>${memSupported()?`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" onclick="connectMemoryFile()">${memHandle?'Trocar arquivo':'🔗 Conectar arquivo'}</button>${memHandle?`<button class="btn" onclick="loadFromMemoryFile()">Carregar</button><span style="font-size:12.5px;color:var(--ok)">${esc(memStatus||'conectado')}</span>`:''}</div>`:`<div style="font-size:12.5px;color:var(--faint)">Sem suporte neste navegador.</div>`}</div>
+    <div class="card" style="padding:20px;margin-top:12px"><div class="field-label" style="margin-top:0">Backup & agenda</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="exportDayICS()">📅 Agenda .ics</button><button class="btn" onclick="exportData()">⬇ Backup</button><button class="btn" onclick="exportEncrypted()">🔒 Cripto</button><button class="btn" onclick="importData()">⬆ Restaurar</button><button class="btn" onclick="wipeData()" style="color:var(--q-do)">Apagar tudo</button></div></div>
+  </div>`;
+  v.appendChild(adv);
 }
 
 /* ===================== ASSISTENTE (chat + tool use) ===================== */
@@ -1156,6 +1233,8 @@ TEMPO HOJE: foco ${fmtDur(s.byType.focus)}, reuniões ${fmtDur(s.byType.meeting)
 async function chatSend(text){
   text=(text||'').trim();if((!text&&!pendingAtts.length)||chatBusy)return;
   if(!state.settings.apiKey){toast('Configure a chave da IA em Ajustes');return;}
+  if(!creditsOk()){openPaywall();return;}
+  creditsUse(1);
   const atts=pendingAtts.slice();pendingAtts=[];
   let content;
   if(atts.length){content=[];let txt=text;atts.filter(a=>a.kind==='text').forEach(a=>{txt+=`\n\n[Arquivo: ${a.name}]\n${a.text}`;});if(txt.trim())content.push({type:'text',text:txt.trim()});atts.filter(a=>a.kind==='image').forEach(a=>content.push({type:'image_url',image_url:{url:a.dataUrl}}));if(!content.length)content.push({type:'text',text:'(anexo)'});}
@@ -1391,9 +1470,41 @@ function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'
 function importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=()=>{const f=inp.files[0];const r=new FileReader();r.onload=async ()=>{try{let d=JSON.parse(r.result);if(d&&d.__enc==='foco1'){const pass=prompt('Senha do backup criptografado:');if(!pass)return;d=await decryptJSON(r.result,pass);}if(d.tasks){state=d;if(!Array.isArray(state.entries))state.entries=[];if(!state.chat||!Array.isArray(state.chat.msgs))state.chat={msgs:[],log:[]};if(!Array.isArray(state.areas)||!state.areas.length)state.areas=makeAreas();const fb=state.areas[0].id;state.projects.forEach(p=>{if(!p.areaId||!state.areas.some(a=>a.id===p.areaId))p.areaId=fb;});state.settings=Object.assign({...SETTINGS_DEFAULTS},state.settings||{});if(!state.settings.model||!state.settings.model.includes('/'))state.settings.model=DEFAULT_MODEL;save();render();toast('Dados restaurados');}}catch(e){toast('Arquivo inválido ou senha incorreta');}};r.readAsText(f);};inp.click();}
 function wipeData(){if(confirm('Apagar TODOS os dados? Não pode ser desfeito.')){state=defaultState();save();render();toast('Tudo apagado.');}}
 
+/* ===================== ONBOARDING · PLANO · PAYWALL ===================== */
+const OB_SLIDES=[
+  {ico:'✦',h:'Bem-vindo ao Foco',p:'Sua central de produtividade pessoal, guiada por inteligência artificial.'},
+  {ico:'🎙️',h:'Fale e pronto',p:'Toque no orbe de comando e diga o que precisa. A IA organiza, prioriza e executa por você.'},
+  {ico:'🎡',h:'Sua vida em áreas',p:'Saúde, Carreira, Finanças, Relacionamentos… cada área com sua própria matriz de prioridades.'},
+  {ico:'⏱️',h:'Domine seu tempo',p:'Rastreie onde seu tempo vai, veja o equilíbrio entre as áreas e bata suas metas.'},
+  {ico:'👑',h:'Você é Premium',p:'Todos os recursos liberados para você testar. Vamos começar?'},
+];
+let obStep=0;
+function startOnboard(){obStep=0;renderOnboard();$('#onboard').classList.add('on');}
+function renderOnboard(){
+  $('#obSlides').innerHTML=OB_SLIDES.map((s,i)=>`<div class="ob-slide ${i===obStep?'on':''}"><div class="ob-ico">${s.ico}</div><div class="ob-h">${esc(s.h)}</div><div class="ob-p">${esc(s.p)}</div></div>`).join('');
+  $('#obDots').innerHTML=OB_SLIDES.map((_,i)=>`<i class="${i===obStep?'on':''}"></i>`).join('');
+  $('#obNext').textContent=obStep>=OB_SLIDES.length-1?'Começar':'Próximo';
+}
+function obAdvance(){if(obStep>=OB_SLIDES.length-1){finishOnboard();return;}obStep++;renderOnboard();}
+function finishOnboard(){state.account.onboarded=true;save();$('#onboard').classList.remove('on');}
+
+function openPaywall(){$('#paywall').classList.add('on');}
+function closePaywall(){$('#paywall').classList.remove('on');}
+function subscribe(plan){
+  const IAP=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.RevenueCat;
+  if(IAP){ toast('Abrindo compra…'); /* StoreKit/RevenueCat será ligado aqui */ }
+  // Scaffold local: ativa Premium (a compra real via App Store entra depois)
+  state.account.plan='premium';state.account.credits=Math.max(state.account.credits,1000);
+  const d=new Date();d.setFullYear(d.getFullYear()+1);state.account.renews=d.toISOString().slice(0,10);
+  save();closePaywall();toast('Premium ativo 👑');render();
+}
+function restorePurchase(){toast('Nada para restaurar (compra real via App Store em breve)');}
+function creditsUse(n){const a=state.account;if(a.plan==='premium'){/* premium: consumo simbólico */}a.credits=Math.max(0,(a.credits||0)-n);save();const el=document.getElementById('creditFill');if(el)el.style.width=Math.min(100,(a.credits/1000)*100)+'%';const cn=document.getElementById('creditNum');if(cn)cn.textContent=a.credits;}
+function creditsOk(){return (state.account.credits||0)>0;}
+
 /* ===================== INIT ===================== */
-render();clockTick();checkDue();setInterval(checkDue,5*60000);restoreMemHandle();startSyncLoop();
-(function(){const LN=nativeLN();if(LN)LN.requestPermissions().catch(()=>{});})();
+render();clockTick();
+if(!state.account.onboarded)setTimeout(startOnboard,300);checkDue();setInterval(checkDue,5*60000);restoreMemHandle();startSyncLoop();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 </script>
 </body>

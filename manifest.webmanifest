@@ -1,0 +1,16 @@
+{
+  "name": "Foco · Time Tracker",
+  "short_name": "Foco",
+  "description": "Gestão pessoal: áreas da vida, matrizes, tempo e assistente.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#17181c",
+  "theme_color": "#17181c",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

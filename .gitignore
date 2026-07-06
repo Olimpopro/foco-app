@@ -1,0 +1,4 @@
+.claude/
+foco-memoria.json
+foco-backup*.json
+.DS_Store

@@ -1302,9 +1302,11 @@ function chime(){try{const ctx=new (window.AudioContext||window.webkitAudioConte
 
 /* ===================== NOTIFICAÇÕES ===================== */
 let notifiedDue=new Set();
-function notifyReady(){return ('Notification' in window)&&Notification.permission==='granted';}
-function askNotify(){if(!('Notification' in window)){toast('Sem suporte a notificações neste navegador');return;}Notification.requestPermission().then(p=>{toast(p==='granted'?'Notificações ativadas ✓':'Permissão negada');if(currentTab==='config')render();});}
-function notify(title,body){try{if(notifyReady())new Notification(title,{body});}catch(e){}}
+function nativeLN(){return (window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.LocalNotifications)||null;}
+function isNativeApp(){return !!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());}
+function notifyReady(){return nativeLN()||(('Notification' in window)&&Notification.permission==='granted');}
+function askNotify(){const LN=nativeLN();if(LN){LN.requestPermissions().then(r=>{toast(r&&r.display==='granted'?'Notificações ativadas ✓':'Permissão negada');if(currentTab==='config')render();}).catch(()=>{});return;}if(!('Notification' in window)){toast('Sem suporte a notificações neste navegador');return;}Notification.requestPermission().then(p=>{toast(p==='granted'?'Notificações ativadas ✓':'Permissão negada');if(currentTab==='config')render();});}
+function notify(title,body){const LN=nativeLN();if(LN){LN.schedule({notifications:[{id:Math.floor(Math.random()*2000000000),title,body,schedule:{at:new Date(Date.now()+400)}}]}).catch(()=>{});return;}try{if(notifyReady())new Notification(title,{body});}catch(e){}}
 function checkDue(){if(!notifyReady())return;const today=todayStr();activeTasks().forEach(t=>{if(t.dueDate&&t.dueDate<=today&&!notifiedDue.has(t.id)){notifiedDue.add(t.id);notify(t.dueDate<today?'⚠ Tarefa atrasada':'📅 Vence hoje',t.title);}});}
 
 /* ===================== CONFETTI ===================== */
@@ -1328,6 +1330,7 @@ function wipeData(){if(confirm('Apagar TODOS os dados? Não pode ser desfeito.')
 
 /* ===================== INIT ===================== */
 render();clockTick();checkDue();setInterval(checkDue,5*60000);restoreMemHandle();startSyncLoop();
+(function(){const LN=nativeLN();if(LN)LN.requestPermissions().catch(()=>{});})();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 </script>
 </body>

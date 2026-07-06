@@ -2,3 +2,4 @@
 foco-memoria.json
 foco-backup*.json
 .DS_Store
+ios-app/

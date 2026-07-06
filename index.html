@@ -542,7 +542,7 @@ const QUADS={do:{label:'Fazer agora',desc:'urgente + importante',color:'var(--q-
 const TYPE={focus:{label:'Foco no trabalho',color:'#5fd0ea'},meeting:{label:'Reuniões',color:'#4f6ef7'},break:{label:'Pausas',color:'#6df0c4'}};
 const CAT_COLORS=['#5fd0ea','#6df0c4','#4f6ef7','#ffb454','#c084fc','#f06d9c','#a3e635'];
 const DEFAULT_MODEL='anthropic/claude-3.5-sonnet';
-const SETTINGS_DEFAULTS={focusMin:25,breakMin:5,longBreakMin:15,dailyTargetMin:450,apiKey:'',model:DEFAULT_MODEL};
+const SETTINGS_DEFAULTS={focusMin:25,breakMin:5,longBreakMin:15,dailyTargetMin:450,apiKey:'',model:DEFAULT_MODEL,sync:{url:'',key:'',id:'',pass:'',enabled:false}};
 const WHEEL_AREAS=[
   {name:'Saúde & Energia',emoji:'🌿',color:'#6df0c4'},
   {name:'Carreira & Trabalho',emoji:'💼',color:'#5fd0ea'},
@@ -564,6 +564,7 @@ function defaultState(){
 }
 function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));if(!s||!s.tasks)return defaultState();
   s.settings=Object.assign({...SETTINGS_DEFAULTS},s.settings||{});
+  s.settings.sync=Object.assign({url:'',key:'',id:'',pass:'',enabled:false},s.settings.sync||{});
   if(!s.settings.model||!s.settings.model.includes('/'))s.settings.model=DEFAULT_MODEL;
   if(!Array.isArray(s.entries))s.entries=[];
   if(!s.chat||!Array.isArray(s.chat.msgs))s.chat={msgs:[],log:[]};
@@ -572,7 +573,7 @@ function load(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY));if(!s||!
   s.projects.forEach(p=>{if(!p.areaId||!s.areas.some(a=>a.id===p.areaId))p.areaId=(/(trabalho|carreira)/i.test(p.name)?(s.areas[1]||s.areas[0]).id:fb);});
   return s;}catch(e){return defaultState();}}
 let memHandle=null,syncTimer=null,memStatus='';
-function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state));scheduleSync();}
+function save(){state.updatedAt=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(state));scheduleSync();schedulePush();}
 let state=load();
 
 /* ===================== MEMÓRIA (arquivo local + cripto) ===================== */
@@ -590,8 +591,26 @@ async function syncMemory(force){if(!memHandle)return;try{let p=await memHandle.
 function scheduleSync(){if(!memHandle)return;clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncMemory(false),900);}
 async function restoreMemHandle(){memHandle=await idbGet('memHandle');if(memHandle){memStatus='conectado';if(currentTab==='config')render();}}
 async function loadFromMemoryFile(){if(!memHandle){connectMemoryFile();return;}try{if((await memHandle.queryPermission({mode:'read'}))!=='granted'){if((await memHandle.requestPermission({mode:'read'}))!=='granted')return;}const f=await memHandle.getFile();let txt=await f.text();let d=JSON.parse(txt);if(d&&d.__enc==='foco1'){const pass=prompt('Senha do arquivo:');if(!pass)return;d=await decryptJSON(txt,pass);}if(d&&d.tasks){state=d;ensureState();save();render();toast('Memória carregada do arquivo');}else toast('Arquivo inválido');}catch(e){toast('Não consegui ler o arquivo');}}
-function ensureState(){if(!Array.isArray(state.entries))state.entries=[];if(!state.chat||!Array.isArray(state.chat.msgs))state.chat={msgs:[],log:[]};if(!Array.isArray(state.areas)||!state.areas.length)state.areas=makeAreas();const fb=state.areas[0].id;state.projects.forEach(p=>{if(!p.areaId||!state.areas.some(a=>a.id===p.areaId))p.areaId=fb;});state.settings=Object.assign({...SETTINGS_DEFAULTS},state.settings||{});if(!state.settings.model||!state.settings.model.includes('/'))state.settings.model=DEFAULT_MODEL;}
+function ensureState(){if(!Array.isArray(state.entries))state.entries=[];if(!state.chat||!Array.isArray(state.chat.msgs))state.chat={msgs:[],log:[]};if(!Array.isArray(state.areas)||!state.areas.length)state.areas=makeAreas();const fb=state.areas[0].id;state.projects.forEach(p=>{if(!p.areaId||!state.areas.some(a=>a.id===p.areaId))p.areaId=fb;});state.settings=Object.assign({...SETTINGS_DEFAULTS},state.settings||{});state.settings.sync=Object.assign({url:'',key:'',id:'',pass:'',enabled:false},state.settings.sync||{});if(!state.settings.model||!state.settings.model.includes('/'))state.settings.model=DEFAULT_MODEL;}
 async function exportEncrypted(){const pass=prompt('Crie uma senha para criptografar o backup:');if(!pass)return;const str=await encryptJSON(state,pass);const blob=new Blob([str],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='foco-backup-cripto.json';a.click();URL.revokeObjectURL(a.href);toast('Backup criptografado exportado 🔒');}
+
+/* ===================== SINCRONIZAÇÃO (E2E, Supabase) ===================== */
+let pushTimer=null,syncing=false;
+function syncCfg(){return state.settings.sync||{};}
+function syncEnabled(){const s=syncCfg();return !!(s.enabled&&s.url&&s.key&&s.id&&s.pass);}
+function setSyncStatus(t){state.__syncStatus=t;const el=document.getElementById('syncStatus');if(el)el.textContent=t;}
+function syncHeaders(){const s=syncCfg();return {'apikey':s.key,'Authorization':'Bearer '+s.key};}
+function schedulePush(){if(!syncEnabled())return;clearTimeout(pushTimer);pushTimer=setTimeout(syncPush,1500);}
+async function syncPush(){if(!syncEnabled()||syncing)return;const s=syncCfg();try{syncing=true;setSyncStatus('enviando…');const enc=await encryptJSON(state,s.pass);const r=await fetch(s.url.replace(/\/+$/,'')+'/rest/v1/sync?on_conflict=id',{method:'POST',headers:{...syncHeaders(),'content-type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify([{id:s.id,data:enc,updated_at:state.updatedAt||Date.now()}])});if(!r.ok)throw new Error('envio HTTP '+r.status);setSyncStatus('✓ sincronizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));}catch(e){setSyncStatus('⚠ '+e.message);}finally{syncing=false;}}
+async function syncPull(){if(!syncEnabled()||syncing)return;const s=syncCfg();try{const r=await fetch(s.url.replace(/\/+$/,'')+'/rest/v1/sync?id=eq.'+encodeURIComponent(s.id)+'&select=data,updated_at',{headers:syncHeaders()});if(!r.ok)throw new Error('leitura HTTP '+r.status);const rows=await r.json();if(!rows||!rows.length)return false;const row=rows[0];if((row.updated_at||0)>(state.updatedAt||0)){let remote;try{remote=await decryptJSON(row.data,s.pass);}catch(_){setSyncStatus('⚠ senha de criptografia diferente');return false;}if(remote&&remote.tasks){state=remote;ensureState();localStorage.setItem(STORE_KEY,JSON.stringify(state));render();setSyncStatus('✓ atualizado de outro dispositivo');return true;}}return false;}catch(e){setSyncStatus('⚠ '+e.message);return false;}}
+async function syncNow(){if(!syncEnabled()){toast('Preencha e ative a sincronização');return;}setSyncStatus('sincronizando…');const pulled=await syncPull();if(!pulled)await syncPush();toast('Sincronizado ✓');}
+function genSyncId(){state.settings.sync.id=b64(crypto.getRandomValues(new Uint8Array(18))).replace(/[^a-zA-Z0-9]/g,'').slice(0,24);save();render();}
+function toggleSync(on){state.settings.sync.enabled=on;save();if(on){syncNow();startSyncLoop();}else{if(syncInterval)clearInterval(syncInterval);setSyncStatus('desativado');render();}}
+function showSyncHelp(){alert('Sincronização ponta a ponta (dados cifrados no servidor)\n\n1) Crie um projeto grátis em supabase.com (New project).\n2) Menu Settings → API: copie o "Project URL" e a "anon public" key.\n3) Menu SQL Editor → New query → cole e rode:\n\ncreate table if not exists public.sync (id text primary key, data text not null, updated_at bigint not null);\nalter table public.sync enable row level security;\ncreate policy "anon all" on public.sync for all to anon using (true) with check (true);\n\n4) Aqui no app: cole o Project URL e a anon key, toque em "Gerar" um código, crie uma senha forte e ative.\n5) No outro aparelho, use os MESMOS URL, anon key, Código e senha.\n\nDica: ative primeiro no aparelho que já tem seus dados (ele vira a fonte).\nSegurança: seus dados são cifrados (AES-256) ANTES de sair do aparelho; o servidor nunca vê o conteúdo. A senha não é enviada a lugar nenhum.');}
+let syncInterval=null;
+function startSyncLoop(){if(syncInterval)clearInterval(syncInterval);if(!syncEnabled())return;syncPull();syncInterval=setInterval(()=>syncPull(),30000);}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&syncEnabled())syncPull();});
+window.addEventListener('online',()=>{if(syncEnabled())syncNow();});
 
 /* ===================== HELPERS ===================== */
 const $=s=>document.querySelector(s);
@@ -1020,6 +1039,18 @@ function renderConfig(v){
     ${memSupported()?`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn primary" onclick="connectMemoryFile()">${memHandle?'Trocar arquivo':'🔗 Conectar arquivo'}</button>${memHandle?`<button class="btn" onclick="loadFromMemoryFile()">Carregar do arquivo</button><span style="font-size:12.5px;color:var(--ok)">${esc(memStatus||'conectado')}</span>`:''}</div>`:`<div style="font-size:12.5px;color:var(--faint)">Seu navegador não suporta auto-salvar em arquivo (use Safari? tente Chrome no Mac). Use o Backup abaixo.</div>`}`;
   v.appendChild(mem);
 
+  const sc=state.settings.sync;
+  const sy=document.createElement('div');sy.className='card';sy.style.cssText='padding:20px;margin-top:14px';
+  sy.innerHTML=`<div class="field-label" style="margin-top:0">Sincronização entre dispositivos</div>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Mac ↔ iPhone com <b style="color:var(--text)">criptografia ponta a ponta</b> — o servidor só guarda dados cifrados. Precisa de um projeto grátis no Supabase (config única). <a href="#" onclick="showSyncHelp();return false">Ver passo a passo</a></p>
+    <div class="field" style="margin-bottom:12px"><label>Project URL (Supabase)</label><input placeholder="https://xxxx.supabase.co" value="${esc(sc.url||'')}" onchange="state.settings.sync.url=this.value.trim();save()"></div>
+    <div class="field" style="margin-bottom:12px"><label>anon key</label><input type="password" placeholder="eyJhbGciOi..." value="${esc(sc.key||'')}" onchange="state.settings.sync.key=this.value.trim();save()"></div>
+    <div class="field" style="margin-bottom:12px"><label>Código de sincronização (igual em todos os aparelhos)</label><div style="display:flex;gap:8px"><input placeholder="gere ou cole" value="${esc(sc.id||'')}" onchange="state.settings.sync.id=this.value.trim();save()" style="flex:1"><button class="btn sm" onclick="genSyncId()">Gerar</button></div></div>
+    <div class="field" style="margin-bottom:16px"><label>Senha de criptografia (igual em todos; nunca sai do aparelho)</label><input type="password" placeholder="crie uma senha forte" value="${esc(sc.pass||'')}" onchange="state.settings.sync.pass=this.value;save()"></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label class="switch"><input type="checkbox" ${sc.enabled?'checked':''} onchange="toggleSync(this.checked)"><i></i></label><span style="font-size:15px">Ativar sincronização</span><button class="btn sm" onclick="syncNow()" style="margin-left:auto">Sincronizar agora</button></div>
+    <div id="syncStatus" style="font-size:12.5px;color:var(--muted);margin-top:12px">${esc(state.__syncStatus||'')}</div>`;
+  v.appendChild(sy);
+
   const data=document.createElement('div');data.className='card';data.style.cssText='padding:20px;margin-top:14px';
   data.innerHTML=`<div class="field-label" style="margin-top:0">Backup & segurança</div><p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Seus dados nunca saem do seu dispositivo (só as mensagens que você envia ao assistente vão para o provedor de IA). Backup criptografado pede uma senha que <b style="color:var(--text)">não fica salva</b>.</p><button class="btn" onclick="exportData()">⬇ Backup</button><button class="btn" onclick="exportEncrypted()" style="margin-left:8px">🔒 Backup criptografado</button><button class="btn" onclick="importData()" style="margin-left:8px">⬆ Restaurar</button><button class="btn" onclick="wipeData()" style="margin-left:8px;color:var(--q-do)">Apagar tudo</button>`;
   v.appendChild(data);
@@ -1296,7 +1327,7 @@ function importData(){const inp=document.createElement('input');inp.type='file';
 function wipeData(){if(confirm('Apagar TODOS os dados? Não pode ser desfeito.')){state=defaultState();save();render();toast('Tudo apagado.');}}
 
 /* ===================== INIT ===================== */
-render();clockTick();checkDue();setInterval(checkDue,5*60000);restoreMemHandle();
+render();clockTick();checkDue();setInterval(checkDue,5*60000);restoreMemHandle();startSyncLoop();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 </script>
 </body>

@@ -1092,7 +1092,7 @@ function taskRow(t){
     <div class="task-sub"><span class="pill"><span class="swatch" style="background:${q.color};color:${q.color}"></span>${q.label}</span><span class="tag-proj">${esc(projName(t.projectId))}</span>${t.dueDate?`<span class="${soon?'due-soon':''}">📅 ${fmtDate(t.dueDate)}${t.dueTime?' '+t.dueTime:''}</span>`:''}${(t.estimateMin||t.pomodoroEstimate)?`<span class="pill">⏱ ${fmtDur(effortMin(t)*60)}</span><span class="pill" style="color:${roiInfo(t).color}">${roiInfo(t).label}</span>`:''}${(t.recurrence&&t.recurrence!=='none')?`<span class="pill" style="color:var(--accent)">🔁 ${t.recurrence==='daily'?'diário':'semanal'}${t.streak?' 🔥'+t.streak:''}</span>`:''}${sp?`<span>☑ ${sp.done}/${sp.total}</span>`:''}${state.priorityTaskId===t.id?'<span class="pill" style="color:var(--accent)">★ prioridade</span>':''}</div>
     ${sp?`<div class="subprog"><i style="width:${sp.pct}%"></i></div>`:''}
     <div class="subtasks" id="sub-${t.id}">${(t.subtasks||[]).map((s,i)=>`<div class="subrow ${s.done?'done':''}"><span class="cb ${s.done?'done':''}" onclick="toggleSub('${t.id}',${i})">${s.done?'✓':''}</span><span onclick="toggleSub('${t.id}',${i})">${esc(s.title)}</span><span class="del" onclick="delSub('${t.id}',${i})">✕</span></div>`).join('')}<div class="add-sub"><input placeholder="Nova subtarefa…" onkeydown="if(event.key==='Enter')addSub('${t.id}',this)"></div></div></div>
-    <div class="task-actions"><button class="icon-btn" onclick="toggleSubPanel('${t.id}')">☰</button><button class="icon-btn" title="Quebrar em passos (IA)" onclick="aiSteps('${t.id}')">✦</button><button class="icon-btn" onclick="startFocus('${t.id}')">▶</button><button class="icon-btn" onclick="setPriority('${t.id}')">★</button><button class="icon-btn" onclick="openEdit('${t.id}')">✎</button><button class="icon-btn" onclick="exportTaskICS('${t.id}')">📅</button></div>`;
+    <div class="task-actions"><button class="icon-btn" onclick="toggleSubPanel('${t.id}')">☰</button><button class="icon-btn" title="Quebrar em passos (IA)" onclick="aiSteps('${t.id}')">✦</button><button class="icon-btn" onclick="startFocus('${t.id}')">▶</button><button class="icon-btn" onclick="setPriority('${t.id}')">★</button><button class="icon-btn" onclick="openEdit('${t.id}')">✎</button><button class="icon-btn" title="Adicionar à Agenda" onclick="addToCalendar('${t.id}')">📅</button></div>`;
   row.querySelector('.check').addEventListener('click',e=>completeTask(t.id,e));return row;
 }
 
@@ -1130,6 +1130,7 @@ function renderConfig(v){
   acct.innerHTML=`<div class="acct-top"><div class="acct-av">${esc(initial)}</div><div style="flex:1"><div class="acct-name">${esc(a.name||'Você')}</div><div class="plan-badge">${a.plan==='premium'?'👑 Premium':'Plano grátis'}</div></div></div>
     <div class="credit-meter"><div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)"><span>Créditos de IA</span><span><b id="creditNum" style="color:var(--text)">${a.credits||0}</b> / 1000</span></div><div class="credit-bar"><i id="creditFill" style="width:${creditPct}%"></i></div></div>
     <div style="display:flex;gap:8px;margin-top:16px">${a.plan==='premium'?`<button class="btn" style="flex:1" onclick="openPaywall()">Gerenciar assinatura</button>`:`<button class="btn primary" style="flex:1" onclick="openPaywall()">✦ Assinar Premium</button>`}</div>
+    ${a.appleUser?`<div style="font-size:12px;color:var(--faint);margin-top:12px;display:flex;justify-content:space-between"><span>Conectado com Apple</span><a href="#" onclick="signOut();return false" style="color:var(--muted)">Sair</a></div>`:`<button class="btn" style="width:100%;margin-top:12px;background:#000;color:#fff" onclick="signInApple()"> Entrar com Apple</button>`}
     ${a.renews?`<div style="font-size:12px;color:var(--faint);margin-top:10px">Renova em ${esc(a.renews)}</div>`:''}`;
   v.appendChild(acct);
 
@@ -1461,6 +1462,20 @@ function icsEsc(s){return String(s).replace(/[\\,;]/g,c=>'\\'+c).replace(/\n/g,'
 function wrapICS(events){return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Foco//PT-BR//','CALSCALE:GREGORIAN',...events,'END:VCALENDAR'].join('\r\n');}
 function downloadICS(content,name){const blob=new Blob([content],{type:'text/calendar;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);}
 function exportTaskICS(id){const t=state.tasks.find(x=>x.id===id);if(!t.dueDate){toast('Defina um prazo para exportar');return;}downloadICS(wrapICS([buildVEvent(t)]),'tarefa-'+slug(t.title)+'.ics');toast('📅 .ics gerado');}
+async function addToCalendar(id){
+  const t=state.tasks.find(x=>x.id===id);if(!t)return;
+  if(!t.dueDate){toast('Defina um prazo para agendar');return;}
+  const CC=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.CapacitorCalendar;
+  if(!CC){exportTaskICS(id);return;}
+  try{
+    try{await CC.requestWriteOnlyCalendarAccess();}catch(_){try{await CC.requestAllPermissions();}catch(__){}}
+    const dp=t.dueDate.split('-').map(Number),tm=(t.dueTime||'09:00').split(':').map(Number);
+    const start=new Date(dp[0],dp[1]-1,dp[2],tm[0]||9,tm[1]||0).getTime();
+    const opts={title:t.title,startDate:start,endDate:start+effortMin(t)*60000};
+    if(CC.createEventWithPrompt)await CC.createEventWithPrompt(opts);else await CC.createEvent(opts);
+    toast('📅 Aberto na Agenda');
+  }catch(e){toast('Agenda: '+(e.message||'erro'));}
+}
 function exportDayICS(){const today=todayStr();const events=activeTasks().filter(t=>t.dueDate===today).map(buildVEvent).filter(Boolean);if(!events.length){toast('Nada agendado para hoje');return;}downloadICS(wrapICS(events),'agenda-'+today+'.ics');toast('📅 Agenda exportada');}
 function exportAllAgenda(){const events=activeTasks().filter(t=>t.dueDate).map(buildVEvent).filter(Boolean);if(!events.length){toast('Nenhuma tarefa com prazo');return;}downloadICS(wrapICS(events),'agenda-completa.ics');toast('📅 '+events.length+' blocos');}
 function slug(s){return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').slice(0,30);}
@@ -1499,6 +1514,18 @@ function subscribe(plan){
   save();closePaywall();toast('Premium ativo 👑');render();
 }
 function restorePurchase(){toast('Nada para restaurar (compra real via App Store em breve)');}
+async function signInApple(){
+  const SA=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SignInWithApple;
+  if(!SA){toast('Login com Apple disponível no app iOS');return;}
+  try{
+    const res=await SA.authorize({});
+    const r=(res&&res.response)||{};
+    const name=[r.givenName,r.familyName].filter(Boolean).join(' ')||(r.email?r.email.split('@')[0]:'Você');
+    state.account.name=name;if(r.user)state.account.appleUser=r.user;if(r.email)state.account.email=r.email;
+    save();toast('Bem-vindo, '+name);render();
+  }catch(e){toast('Login cancelado');}
+}
+function signOut(){state.account.appleUser='';state.account.email='';save();toast('Sessão encerrada');render();}
 function creditsUse(n){const a=state.account;if(a.plan==='premium'){/* premium: consumo simbólico */}a.credits=Math.max(0,(a.credits||0)-n);save();const el=document.getElementById('creditFill');if(el)el.style.width=Math.min(100,(a.credits/1000)*100)+'%';const cn=document.getElementById('creditNum');if(cn)cn.textContent=a.credits;}
 function creditsOk(){return (state.account.credits||0)>0;}
 
